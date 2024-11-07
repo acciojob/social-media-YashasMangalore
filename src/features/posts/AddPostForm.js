@@ -10,6 +10,7 @@ export const AddPostForm = () => {
   const [content, setContent] = useState("");
   const [userId, setUserId] = useState("");
   const [addRequestStatus, setAddRequestStatus] = useState("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const dispatch = useDispatch();
   const users = useSelector(selectAllUsers);
@@ -32,7 +33,9 @@ export const AddPostForm = () => {
         setTitle("");
         setContent("");
         setUserId("");
+        setErrorMessage("");
       } catch (err) {
+        setErrorMessage("Failed to save the post. Please try again.");
         console.error("Failed to save the post: ", err);
       } finally {
         setAddRequestStatus("idle");
@@ -49,32 +52,44 @@ export const AddPostForm = () => {
   return (
     <section>
       <h2>Add a New Post</h2>
-      <form>
-        <label htmlFor="postTitle">Post Title:</label>
-        <input
-          type="text"
-          id="postTitle"
-          name="postTitle"
-          placeholder="What's on your mind?"
-          value={title}
-          onChange={onTitleChanged}
-        />
-        <label htmlFor="postAuthor">Author:</label>
-        <select id="postAuthor" value={userId} onChange={onAuthorChanged}>
-          <option value=""></option>
-          {usersOptions}
-        </select>
-        <label htmlFor="postContent">Content:</label>
-        <textarea
-          id="postContent"
-          name="postContent"
-          value={content}
-          onChange={onContentChanged}
-        />
-        <button type="button" onClick={onSavePostClicked} disabled={!canSave}>
-          Save Post
-        </button>
-      </form>
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+      {users.length > 0 ? (
+        <form>
+          <label htmlFor="postTitle">Post Title:</label>
+          <input
+            type="text"
+            id="postTitle"
+            name="postTitle"
+            placeholder="What's on your mind?"
+            value={title}
+            onChange={onTitleChanged}
+            aria-label="Post Title"
+          />
+          <label htmlFor="postAuthor">Author:</label>
+          <select
+            id="postAuthor"
+            value={userId}
+            onChange={onAuthorChanged}
+            aria-label="Post Author"
+          >
+            <option value="">Select an author</option>
+            {usersOptions}
+          </select>
+          <label htmlFor="postContent">Content:</label>
+          <textarea
+            id="postContent"
+            name="postContent"
+            value={content}
+            onChange={onContentChanged}
+            aria-label="Post Content"
+          />
+          <button type="button" onClick={onSavePostClicked} disabled={!canSave}>
+            Save Post
+          </button>
+        </form>
+      ) : (
+        <p>Loading users...</p>
+      )}
     </section>
   );
 };
